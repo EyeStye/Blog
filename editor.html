@@ -40,6 +40,14 @@
   .editor-area code{ background:#f2f2f2; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:13.5px; }
   .editor-area blockquote{ border-left:3px solid var(--red); margin:10px 0; padding:4px 14px; color:#444; }
   .editor-area a{ color:var(--red); }
+  .mac-code{ background:#1e1e1e; border-radius:8px; margin:14px 0; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.15); }
+  .mac-code-header{ display:flex; gap:7px; padding:9px 12px; background:#2d2d2d; }
+  .mac-code-header .dot{ width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .mac-code-header .dot.red{ background:#ff5f56; }
+  .mac-code-header .dot.yellow{ background:#ffbd2e; }
+  .mac-code-header .dot.green{ background:#27c93f; }
+  .mac-code pre{ margin:0; padding:14px 16px; overflow-x:auto; }
+  .mac-code pre code{ background:none; padding:0; color:#e6e6e6; font-family:'SF Mono',Consolas,Monaco,monospace; font-size:13.5px; line-height:1.55; white-space:pre; }
   .hint{ font-size:12px; color:var(--muted); margin-top:5px; }
   .math-preview{ border:1px dashed #bbb; padding:10px 12px; margin-top:8px; display:none; font-size:14.5px; }
   .math-preview.show{ display:block; }
@@ -164,6 +172,7 @@
           <button type="button" id="btnUnderline"><u>U</u></button>
           <button type="button" id="btnStrike"><s>S</s></button>
           <button type="button" id="btnCode">&lt;/&gt;</button>
+          <button type="button" id="btnCodeBlock">Code Block</button>
           <button type="button" id="btnSub">X&#8322;</button>
           <button type="button" id="btnSup">X&#8321;</button>
           <button type="button" id="btnUl">&#8226; List</button>
@@ -380,7 +389,22 @@ document.getElementById('btnCode').onclick = ()=>{
     document.execCommand('insertHTML', false, '<code>code</code>');
   }
 };
+document.getElementById('btnCodeBlock').onclick = ()=>{
+  const area = document.getElementById('editorArea');
+  area.focus();
+  const sel = window.getSelection();
+  const rawText = (sel && sel.toString()) || '// your code here';
+  const escaped = rawText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const html = '<div class="mac-code">'
+    + '<div class="mac-code-header" contenteditable="false"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>'
+    + '<pre><code>' + escaped + '</code></pre>'
+    + '</div><p><br></p>';
+  document.execCommand('insertHTML', false, html);
+};
 document.getElementById('blockFormat').addEventListener('change', (e)=>{
+  document.getElementById('editorArea').focus();
+  document.execCommand('formatBlock', false, e.target.value);
+});
   document.getElementById('editorArea').focus();
   document.execCommand('formatBlock', false, e.target.value);
   e.target.value = e.target.options[0].value === 'P' ? e.target.value : e.target.value; // keep selection visible
