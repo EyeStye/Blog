@@ -35,13 +35,6 @@
     "file": "p_seed5.json"
   },
   {
-    "id": "p_seed6",
-    "title": "Luogu P1728 discussion",
-    "category": "洛谷",
-    "createdAt": "2026-07-15T09:00:00.000Z",
-    "file": "p_seed6.json"
-  },
-  {
     "id": "p_seed7",
     "title": "Codeforces Round 1107 (Div. 3) discussions",
     "category": "Codeforces",
@@ -54,12 +47,5 @@
     "category": "Codeforces",
     "createdAt": "2026-04-04T09:00:00.000Z",
     "file": "p_seed8.json"
-  },
-  {
-    "id": "p_mrszh96e",
-    "title": "Quadratic Equation",
-    "category": "Math",
-    "createdAt": "2026-07-20T08:49:37.718Z",
-    "file": "p_mrszh96e.json"
   }
 ]
