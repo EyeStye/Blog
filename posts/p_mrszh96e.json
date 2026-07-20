@@ -1,7 +1,0 @@
-{
-  "id": "p_mrszh96e",
-  "title": "Quadratic Equation",
-  "category": "Math",
-  "createdAt": "2026-07-20T08:49:37.718Z",
-  "content": "$$ax^2+bx+c=0 \\implies x = \\frac{-b\\pm \\sqrt{b^2-4ac}}{2a}$$"
-}
