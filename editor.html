@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Blog Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root{ --border:#333; --text:#111; --muted:#666; --red:#cc1414; --header-bg:#e2e2e2; --row-alt:#f2f2f2; --btn-gray:#bdbdbd; --green:#0a8a0a; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#fafafa;}
+  body{ font-family:'Lato',sans-serif; color:var(--text); display:flex; justify-content:center; padding:24px 12px; }
+  .page{ width:100%; max-width:960px; border:1px solid var(--border); background:#fff; padding:30px 36px 44px; }
+  h1{ font-weight:900; font-size:30px; margin:0 0 4px; }
+  .sub{ color:var(--muted); font-size:14px; margin-bottom:22px; }
+  .back{ color:var(--red); font-weight:700; font-size:14px; text-decoration:none; }
+  .section{ border:1px solid #999; margin-bottom:26px; }
+  .section-header{ background:var(--header-bg); font-weight:900; padding:9px 14px; border-bottom:1px solid #999; font-size:15px; display:flex; justify-content:space-between; align-items:center; }
+  .section-body{ padding:16px 18px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-weight:700; font-size:13px; margin-bottom:5px; }
+  .field input[type=text], .field input[type=password], .field input[type=number], .field select{
+    width:100%; padding:9px 10px; border:1px solid #999; font-family:'Lato'; font-size:14.5px; }
+  .row2{ display:flex; gap:14px; flex-wrap:wrap; }
+  .row2 .field{ flex:1 1 200px; }
+  .toolbar{ display:flex; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
+  .toolbar button{ padding:6px 12px; border:1px solid #999; background:#f5f5f5; cursor:pointer; font-family:'Lato'; font-weight:700; font-size:13px; }
+  .toolbar button:hover{ background:#eaeaea; }
+  .editor-area{ border:1px solid #999; min-height:200px; padding:12px; font-size:14.5px; line-height:1.6; outline:none; }
+  .editor-area img{ max-width:100%; }
+  .hint{ font-size:12px; color:var(--muted); margin-top:5px; }
+  .math-preview{ border:1px dashed #bbb; padding:10px 12px; margin-top:8px; display:none; font-size:14.5px; }
+  .math-preview.show{ display:block; }
+  .btn{ padding:9px 20px; border:none; cursor:pointer; font-family:'Lato'; font-weight:700; font-size:14px; }
+  .btn-primary{ background:var(--red); color:#fff; }
+  .btn-primary:hover{ background:#a80f0f; }
+  .btn-secondary{ background:#e2e2e2; color:#333; }
+  .btn-secondary:hover{ background:#d2d2d2; }
+  .btn-github{ background:#24292e; color:#fff; }
+  .btn-github:hover{ background:#111; }
+  .btn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn-row{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .file-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .post-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid #ddd; }
+  .post-row:nth-child(odd){ background:#fff; } .post-row:nth-child(even){ background:var(--row-alt); }
+  .post-row .t{ font-weight:700; flex:1; }
+  .post-row .c{ color:var(--muted); font-size:13px; width:120px; }
+  .post-row .actions{ display:flex; gap:6px; }
+  .tag{ font-size:12px; padding:2px 8px; border-radius:10px; background:#eee; color:#555; margin-left:8px; }
+  .tag.new{ background:#dff5df; color:#227722; }
+  .tag.mod{ background:#fff3d6; color:#8a6600; }
+  .tag.del{ background:#fbdada; color:#a11; text-decoration:line-through; }
+  .empty{ color:var(--muted); font-size:14px; padding:10px 4px; }
+  .status{ font-size:13px; margin-top:10px; color:var(--muted); white-space:pre-wrap; }
+  .status.ok{ color:var(--green); }
+  .status.err{ color:var(--red); }
+  .icon-btn{ width:24px;height:24px;border-radius:50%; border:none; cursor:pointer; color:#fff; font-size:12px; font-weight:900; }
+  .icon-edit{ background:#555; } .icon-del{ background:var(--red); }
+  .conn-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; background:#bbb; margin-right:6px; }
+  .conn-dot.on{ background:var(--green); }
+  .checkbox-row{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); margin-top:6px; }
+  #lockScreen{ position:fixed; inset:0; background:#fafafa; display:flex; align-items:center; justify-content:center; z-index:100; }
+  #lockBox{ max-width:320px; width:100%; padding:30px; text-align:center; border:1px solid var(--border); background:#fff; }
+  #lockBox .t{ font-weight:900; font-size:22px; margin-bottom:16px; }
+  #lockBox input{ width:100%; padding:10px; border:1px solid #999; font-family:'Lato'; font-size:14.5px; margin-bottom:12px; }
+  #lockError{ color:var(--red); font-size:13px; margin-top:10px; min-height:16px; }
+</style>
+</head>
+<body>
+<div id="lockScreen">
+  <div id="lockBox">
+    <div class="t">Editor Locked</div>
+    <input type="password" id="lockInput" placeholder="Passphrase" autocomplete="off">
+    <button class="btn btn-primary" id="lockSubmit" style="width:100%;">Unlock</button>
+    <div id="lockError"></div>
+  </div>
+</div>
+<div class="page" id="mainPage" style="display:none;">
+  <a class="back" href="index.html">&larr; Back to blog</a>
+  <h1>Blog Editor</h1>
+  <div class="sub">Compose posts and publish them straight to your GitHub repo, or download an update package to commit by hand.</div>
+
+  <div class="section">
+    <div class="section-header"><span><span class="conn-dot" id="connDot"></span>0. Connect to GitHub</span></div>
+    <div class="section-body">
+      <div class="row2">
+        <div class="field"><label>Repo owner</label><input type="text" id="ghOwner" placeholder="e.g. your-username"></div>
+        <div class="field"><label>Repo name</label><input type="text" id="ghRepo" placeholder="e.g. my-blog"></div>
+        <div class="field"><label>Branch</label><input type="text" id="ghBranch" placeholder="main" value="main"></div>
+        <div class="field"><label>Personal access token</label><input type="password" id="ghToken" placeholder="ghp_..."></div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="rememberToken"><label for="rememberToken">Remember these for this browser tab only (sessionStorage, cleared when tab closes)</label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-github" id="loadFromGhBtn">Load current data from GitHub</button>
+      </div>
+      <div class="status" id="ghStatus">Not connected. Use a fine-grained token scoped to only this repo, with "Contents: Read and write" permission.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">1. Or load data from local files</div>
+    <div class="section-body">
+      <div class="file-row">
+        <label class="hint">index.json:</label>
+        <input type="file" id="loadIndex" accept=".json">
+        <label class="hint">ratings.json:</label>
+        <input type="file" id="loadRatings" accept=".json">
+        <label class="hint">post file(s) you want to edit:</label>
+        <input type="file" id="loadPosts" accept=".json" multiple>
+      </div>
+      <div class="status" id="loadStatus">No data loaded yet — starting from an empty blog.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">2. Ratings</div>
+    <div class="section-body">
+      <div class="row2">
+        <div class="field"><label>CF value / change</label>
+          <div style="display:flex;gap:6px;"><input type="number" id="cfVal"><input type="number" id="cfDelta"></div></div>
+        <div class="field"><label>AtC value / change</label>
+          <div style="display:flex;gap:6px;"><input type="number" id="atcVal"><input type="number" id="atcDelta"></div></div>
+        <div class="field"><label>LC value / change</label>
+          <div style="display:flex;gap:6px;"><input type="number" id="lcVal"><input type="number" id="lcDelta"></div></div>
+        <div class="field"><label>CC value / change</label>
+          <div style="display:flex;gap:6px;"><input type="number" id="ccVal"><input type="number" id="ccDelta"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" id="composeHeader">3. New / edit post</div>
+    <div class="section-body">
+      <div class="row2">
+        <div class="field"><label>Title</label><input type="text" id="postTitle" placeholder="Post title"></div>
+        <div class="field"><label>Category</label><select id="postCategory"></select></div>
+      </div>
+      <div class="field">
+        <label>Content</label>
+        <div class="toolbar">
+          <button type="button" id="btnBold"><b>B</b></button>
+          <button type="button" id="btnItalic"><i>I</i></button>
+          <button type="button" id="btnImage">Insert Image</button>
+          <button type="button" id="btnMath">Insert Math $</button>
+          <button type="button" id="btnPreview" style="margin-left:auto;">Toggle MathJax Preview</button>
+        </div>
+        <div class="editor-area" contenteditable="true" id="editorArea" spellcheck="false"></div>
+        <div class="hint">Use $...$ for inline math and $$...$$ for display math, e.g. $O(n \log n)$.</div>
+        <div class="math-preview" id="mathPreview"></div>
+        <input type="file" id="imageFileInput" accept="image/*" style="display:none">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="saveBtn">Save Post (to this session)</button>
+        <button class="btn btn-secondary" id="clearBtn">Clear Form</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">4. Posts in this session</div>
+    <div class="section-body" id="postsList"><div class="empty">No posts loaded or created yet.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">5. Publish</div>
+    <div class="section-body">
+      <div class="hint" style="margin-bottom:10px;">
+        "Publish to GitHub" pushes <code>index.json</code>, <code>ratings.json</code>, and every new/edited/deleted
+        post file directly into your repo's <code>/posts</code> folder as a commit. If your site is on GitHub Pages
+        it will redeploy automatically within a minute or so.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-github" id="publishBtn">Publish to GitHub</button>
+        <button class="btn btn-secondary" id="downloadBtn">Download Update Package (.zip) instead</button>
+      </div>
+      <div class="status" id="publishStatus"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- Passphrase lock ----------------
+   This is a deterrent, not real security — the actual access control is the GitHub
+   token required to publish. Change PASSPHRASE_HASH by computing:
+   sha256sum on your new passphrase (or run in this page's console:
+   crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourphrase')).then(b=>
+   console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''))) */
+const PASSPHRASE_HASH = "057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86"; // default passphrase: "changeme"
+
+async function sha256Hex(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function tryUnlock(){
+  const val = document.getElementById('lockInput').value;
+  const hash = await sha256Hex(val);
+  if(hash === PASSPHRASE_HASH){
+    sessionStorage.setItem('editor_unlocked', '1');
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('mainPage').style.display = 'block';
+  } else {
+    document.getElementById('lockError').textContent = 'Incorrect passphrase.';
+    document.getElementById('lockInput').value = '';
+  }
+}
+document.getElementById('lockSubmit').onclick = tryUnlock;
+document.getElementById('lockInput').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+if(sessionStorage.getItem('editor_unlocked') === '1'){
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+}
+
+const CATEGORIES = ["Codeforces","AtCoder","洛谷","Math","Templates","Others"];
+let index = [];
+let ratings = {CF:{val:0,delta:0}, AtC:{val:0,delta:0}, LC:{val:0,delta:0}, CC:{val:0,delta:0}};
+let postContents = {};
+let dirty = {};
+let editingId = null;
+
+function populateCategorySelect(){
+  const sel = document.getElementById('postCategory');
+  sel.innerHTML = '';
+  CATEGORIES.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; sel.appendChild(opt); });
+}
+populateCategorySelect();
+
+function syncRatingFields(){
+  document.getElementById('cfVal').value = ratings.CF.val; document.getElementById('cfDelta').value = ratings.CF.delta;
+  document.getElementById('atcVal').value = ratings.AtC.val; document.getElementById('atcDelta').value = ratings.AtC.delta;
+  document.getElementById('lcVal').value = ratings.LC.val; document.getElementById('lcDelta').value = ratings.LC.delta;
+  document.getElementById('ccVal').value = ratings.CC.val; document.getElementById('ccDelta').value = ratings.CC.delta;
+}
+syncRatingFields();
+['cfVal','cfDelta','atcVal','atcDelta','lcVal','lcDelta','ccVal','ccDelta'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    ratings.CF.val = Number(document.getElementById('cfVal').value)||0;
+    ratings.CF.delta = Number(document.getElementById('cfDelta').value)||0;
+    ratings.AtC.val = Number(document.getElementById('atcVal').value)||0;
+    ratings.AtC.delta = Number(document.getElementById('atcDelta').value)||0;
+    ratings.LC.val = Number(document.getElementById('lcVal').value)||0;
+    ratings.LC.delta = Number(document.getElementById('lcDelta').value)||0;
+    ratings.CC.val = Number(document.getElementById('ccVal').value)||0;
+    ratings.CC.delta = Number(document.getElementById('ccDelta').value)||0;
+    dirty['__ratings__'] = 'mod';
+  });
+});
+
+function readFileAsText(file){
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsText(file); });
+}
+
+document.getElementById('loadIndex').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{ index = JSON.parse(await readFileAsText(f)); updateStatus(); renderPostsList(); }
+  catch(err){ alert('Could not parse index.json'); }
+});
+document.getElementById('loadRatings').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{ ratings = JSON.parse(await readFileAsText(f)); syncRatingFields(); updateStatus(); }
+  catch(err){ alert('Could not parse ratings.json'); }
+});
+document.getElementById('loadPosts').addEventListener('change', async (e)=>{
+  const files = Array.from(e.target.files);
+  for(const f of files){
+    try{ const data = JSON.parse(await readFileAsText(f)); if(data.id){ postContents[data.id] = data.content || ''; } }
+    catch(err){}
+  }
+  updateStatus(); renderPostsList();
+  e.target.value = '';
+});
+function updateStatus(){
+  document.getElementById('loadStatus').textContent =
+    `${index.length} post(s) in index, ${Object.keys(postContents).length} post file(s) loaded into this session.`;
+}
+
+function renderPostsList(){
+  const el = document.getElementById('postsList');
+  if(index.length === 0){ el.innerHTML = '<div class="empty">No posts loaded or created yet.</div>'; return; }
+  el.innerHTML = index.map(p=>{
+    let tag = '';
+    if(dirty[p.id] === 'new') tag = '<span class="tag new">new</span>';
+    else if(dirty[p.id] === 'mod') tag = '<span class="tag mod">edited</span>';
+    return `<div class="post-row">
+      <div class="t">${escapeHtml(p.title)}${tag}</div>
+      <div class="c">${escapeHtml(p.category)}</div>
+      <div class="actions">
+        <button class="icon-btn icon-edit" data-edit="${p.id}" title="Edit">&#9998;</button>
+        <button class="icon-btn icon-del" data-del="${p.id}" title="Delete">&times;</button>
+      </div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-edit]').forEach(btn=> btn.onclick = ()=> editPost(btn.dataset.edit));
+  el.querySelectorAll('[data-del]').forEach(btn=> btn.onclick = ()=> deletePost(btn.dataset.del));
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function editPost(id){
+  const meta = index.find(p=>p.id===id);
+  if(!meta) return;
+  if(!(id in postContents)){ alert("Load this post's JSON file first (or load from GitHub) so its content can be edited."); return; }
+  editingId = id;
+  document.getElementById('composeHeader').textContent = '3. Editing: ' + meta.title;
+  document.getElementById('postTitle').value = meta.title;
+  document.getElementById('postCategory').value = meta.category;
+  document.getElementById('editorArea').innerHTML = postContents[id];
+  window.scrollTo({top: document.getElementById('composeHeader').offsetTop - 20, behavior:'smooth'});
+}
+let pendingDeletes = [];
+function deletePost(id){
+  if(!confirm('Mark this post as deleted?')) return;
+  const meta = index.find(p=>p.id===id);
+  index = index.filter(p=>p.id!==id);
+  delete postContents[id];
+  delete dirty[id];
+  if(meta) pendingDeletes.push(meta.file);
+  renderPostsList();
+}
+
+document.getElementById('btnBold').onclick = ()=> document.execCommand('bold');
+document.getElementById('btnItalic').onclick = ()=> document.execCommand('italic');
+document.getElementById('btnImage').onclick = ()=> document.getElementById('imageFileInput').click();
+document.getElementById('imageFileInput').onchange = (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('insertImage', false, reader.result); };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+};
+document.getElementById('btnMath').onclick = ()=>{ const area=document.getElementById('editorArea'); area.focus(); document.execCommand('insertText', false, '$ ... $'); };
+document.getElementById('btnPreview').onclick = ()=>{
+  const preview = document.getElementById('mathPreview');
+  preview.classList.toggle('show');
+  if(preview.classList.contains('show')){
+    preview.innerHTML = document.getElementById('editorArea').innerHTML;
+    if(window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([preview]).catch(()=>{});
+  }
+};
+document.getElementById('clearBtn').onclick = ()=>{
+  editingId = null;
+  document.getElementById('composeHeader').textContent = '3. New / edit post';
+  document.getElementById('postTitle').value = '';
+  document.getElementById('editorArea').innerHTML = '';
+  document.getElementById('mathPreview').classList.remove('show');
+};
+document.getElementById('saveBtn').onclick = ()=>{
+  const title = document.getElementById('postTitle').value.trim();
+  const category = document.getElementById('postCategory').value;
+  const html = document.getElementById('editorArea').innerHTML;
+  if(!title){ alert('Please enter a title.'); return; }
+  if(editingId){
+    const meta = index.find(p=>p.id===editingId);
+    meta.title = title; meta.category = category;
+    postContents[editingId] = html;
+    dirty[editingId] = 'mod';
+  } else {
+    const id = 'p_' + Date.now().toString(36);
+    const createdAt = new Date().toISOString();
+    index.push({id, title, category, createdAt, file: id + '.json'});
+    postContents[id] = html;
+    dirty[id] = 'new';
+  }
+  document.getElementById('clearBtn').onclick();
+  updateStatus();
+  renderPostsList();
+};
+
+document.getElementById('downloadBtn').onclick = async ()=>{
+  const zip = new JSZip();
+  zip.file('index.json', JSON.stringify(index, null, 2));
+  zip.file('ratings.json', JSON.stringify(ratings, null, 2));
+  Object.keys(dirty).forEach(id=>{
+    if(id === '__ratings__') return;
+    if(dirty[id] === 'new' || dirty[id] === 'mod'){
+      const meta = index.find(p=>p.id===id);
+      if(meta) zip.file(meta.file, JSON.stringify({id, title:meta.title, category:meta.category, createdAt:meta.createdAt, content: postContents[id] || ''}, null, 2));
+    }
+  });
+  const blob = await zip.generateAsync({type:'blob'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'posts-update.zip';
+  document.body.appendChild(a); a.click(); a.remove();
+  setStatus('publishStatus', 'Downloaded posts-update.zip — unzip into /posts and commit.', 'ok');
+};
+
+/* ---------------- GitHub integration ---------------- */
+function ghConfig(){
+  return {
+    owner: document.getElementById('ghOwner').value.trim(),
+    repo: document.getElementById('ghRepo').value.trim(),
+    branch: document.getElementById('ghBranch').value.trim() || 'main',
+    token: document.getElementById('ghToken').value.trim()
+  };
+}
+function setStatus(id, msg, cls){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status' + (cls ? (' ' + cls) : '');
+}
+function utf8_to_b64(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64_to_utf8(str){ return decodeURIComponent(escape(atob(str))); }
+
+async function ghGetFile(cfg, path){
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${encodeURIComponent(cfg.branch)}`;
+  const res = await fetch(url, { headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json' } });
+  if(res.status === 404) return null;
+  if(!res.ok) throw new Error(`GET ${path} failed: ${res.status} ${res.statusText}`);
+  const data = await res.json();
+  return { sha: data.sha, content: b64_to_utf8(data.content.replace(/\n/g,'')) };
+}
+async function ghPutFile(cfg, path, contentStr, message){
+  const existing = await ghGetFile(cfg, path);
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+  const body = { message, content: utf8_to_b64(contentStr), branch: cfg.branch };
+  if(existing) body.sha = existing.sha;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){ const t = await res.text(); throw new Error(`PUT ${path} failed: ${res.status} ${t}`); }
+  return res.json();
+}
+async function ghDeleteFile(cfg, path, message){
+  const existing = await ghGetFile(cfg, path);
+  if(!existing) return;
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, sha: existing.sha, branch: cfg.branch })
+  });
+  if(!res.ok){ const t = await res.text(); throw new Error(`DELETE ${path} failed: ${res.status} ${t}`); }
+}
+
+document.getElementById('loadFromGhBtn').onclick = async ()=>{
+  const cfg = ghConfig();
+  if(!cfg.owner || !cfg.repo || !cfg.token){ setStatus('ghStatus', 'Fill in owner, repo, and token first.', 'err'); return; }
+  setStatus('ghStatus', 'Loading from GitHub…');
+  try{
+    const idxFile = await ghGetFile(cfg, 'posts/index.json');
+    const ratingsFile = await ghGetFile(cfg, 'posts/ratings.json');
+    index = idxFile ? JSON.parse(idxFile.content) : [];
+    ratings = ratingsFile ? JSON.parse(ratingsFile.content) : ratings;
+    syncRatingFields();
+    // Also pull every post's content so edit/delete works right away this session
+    postContents = {};
+    for(const p of index){
+      const f = await ghGetFile(cfg, 'posts/' + p.file);
+      if(f){ try{ postContents[p.id] = JSON.parse(f.content).content || ''; }catch(e){} }
+    }
+    document.getElementById('connDot').classList.add('on');
+    setStatus('ghStatus', `Connected. Loaded ${index.length} post(s) from ${cfg.owner}/${cfg.repo}@${cfg.branch}.`, 'ok');
+    updateStatus(); renderPostsList();
+    maybeRemember(cfg);
+  }catch(err){
+    document.getElementById('connDot').classList.remove('on');
+    setStatus('ghStatus', 'Failed: ' + err.message, 'err');
+  }
+};
+
+document.getElementById('publishBtn').onclick = async ()=>{
+  const cfg = ghConfig();
+  if(!cfg.owner || !cfg.repo || !cfg.token){ setStatus('publishStatus', 'Fill in the GitHub connection fields above first.', 'err'); return; }
+  const btn = document.getElementById('publishBtn');
+  btn.disabled = true;
+  setStatus('publishStatus', 'Publishing…');
+  try{
+    const log = [];
+    await ghPutFile(cfg, 'posts/index.json', JSON.stringify(index, null, 2), 'Update index.json via blog editor');
+    log.push('✓ posts/index.json');
+    if(dirty['__ratings__']){
+      await ghPutFile(cfg, 'posts/ratings.json', JSON.stringify(ratings, null, 2), 'Update ratings.json via blog editor');
+      log.push('✓ posts/ratings.json');
+    }
+    for(const id of Object.keys(dirty)){
+      if(id === '__ratings__') continue;
+      const meta = index.find(p=>p.id===id);
+      if(!meta) continue;
+      const payload = JSON.stringify({id, title:meta.title, category:meta.category, createdAt:meta.createdAt, content: postContents[id] || ''}, null, 2);
+      await ghPutFile(cfg, 'posts/' + meta.file, payload, `${dirty[id]==='new'?'Add':'Update'} post: ${meta.title}`);
+      log.push(`✓ posts/${meta.file}`);
+    }
+    for(const file of pendingDeletes){
+      await ghDeleteFile(cfg, 'posts/' + file, 'Delete post via blog editor');
+      log.push(`✓ deleted posts/${file}`);
+    }
+    dirty = {}; pendingDeletes = [];
+    renderPostsList();
+    setStatus('publishStatus', 'Published successfully:\n' + log.join('\n'), 'ok');
+  }catch(err){
+    setStatus('publishStatus', 'Publish failed: ' + err.message, 'err');
+  }finally{
+    btn.disabled = false;
+  }
+};
+
+function maybeRemember(cfg){
+  if(document.getElementById('rememberToken').checked){
+    sessionStorage.setItem('gh_owner', cfg.owner);
+    sessionStorage.setItem('gh_repo', cfg.repo);
+    sessionStorage.setItem('gh_branch', cfg.branch);
+    sessionStorage.setItem('gh_token', cfg.token);
+  }
+}
+(function restoreRemembered(){
+  const o = sessionStorage.getItem('gh_owner');
+  if(o){
+    document.getElementById('ghOwner').value = o;
+    document.getElementById('ghRepo').value = sessionStorage.getItem('gh_repo') || '';
+    document.getElementById('ghBranch').value = sessionStorage.getItem('gh_branch') || 'main';
+    document.getElementById('ghToken').value = sessionStorage.getItem('gh_token') || '';
+    document.getElementById('rememberToken').checked = true;
+  }
+})();
+
+renderPostsList();
+</script>
+</body>
+</html>

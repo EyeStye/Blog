@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" async></script>
+<style>
+  :root{
+    --border:#333; --text:#111; --muted:#666; --red:#cc1414;
+    --header-bg:#e2e2e2; --row-alt:#f2f2f2; --green:#0a8a0a; --blue:#1560d6; --btn-gray:#bdbdbd;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#fafafa;}
+  body{ font-family:'Lato',sans-serif; color:var(--text); display:flex; justify-content:center; padding:24px 12px; }
+  .lato-black{ font-weight:900; }
+  .page{ width:100%; max-width:1080px; border:1px solid var(--border); background:#fff; padding:36px 40px 50px; min-height:700px; }
+  .top-row{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+  .site-title{ font-size:42px; font-weight:900; cursor:pointer; user-select:none; }
+  .today-date{ font-size:34px; font-weight:900; padding-top:4px; }
+  nav{ display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid var(--red); padding-bottom:10px; margin-bottom:26px; flex-wrap:wrap; gap:10px; }
+  .nav-links{ display:flex; gap:22px; flex-wrap:wrap; }
+  .nav-links span{ font-weight:700; font-size:16px; cursor:pointer; padding-bottom:2px; }
+  .nav-links span.active{ color:var(--red); }
+  .nav-btns{ display:flex; gap:8px; }
+  .circle-btn{ width:26px;height:26px;border-radius:50%; border:none; display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:900;color:#fff; cursor:pointer; line-height:1; text-decoration:none; }
+  .circle-btn.minus{ background:var(--red); }
+  .circle-btn.plus{ background:var(--btn-gray); color:#555; }
+  .circle-btn:hover{ filter:brightness(0.92); }
+
+  .home-grid{ display:flex; gap:28px; flex-wrap:wrap; }
+  .panel{ border:1px solid #999; flex:1 1 420px; }
+  .panel-header{ background:var(--header-bg); font-weight:900; padding:8px 12px; border-bottom:1px solid #999; font-size:15px; }
+  table{ width:100%; border-collapse:collapse; }
+  table td{ border:1px solid #ccc; padding:10px 12px; font-size:14.5px; vertical-align:middle; }
+  .recent-table td:first-child{ width:34px; text-align:center; color:var(--muted); }
+  .recent-table td.title-cell{ cursor:pointer; }
+  .recent-table td.title-cell:hover{ text-decoration:underline; color:var(--red); }
+  .recent-table td:last-child{ width:110px; color:var(--muted); text-align:right; }
+  .ratings-table td:first-child{ font-weight:700; width:60px; }
+  .ratings-table td:nth-child(2){ font-weight:900; }
+  .ratings-table td:last-child{ width:60px; text-align:right; font-weight:700; }
+  .delta-pos{ color:var(--green); }
+  .delta-neg{ color:var(--red); }
+  .rating-cf,.rating-atc{ color:var(--green); }
+  .rating-lc{ color:#111; }
+  .rating-cc{ color:var(--blue); }
+
+  .cat-list{ border:1px solid #999; }
+  .cat-row{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid #ddd; cursor:pointer; }
+  .cat-row:nth-child(odd){ background:#fff; }
+  .cat-row:nth-child(even){ background:var(--row-alt); }
+  .cat-row:last-child{ border-bottom:none; }
+  .cat-row:hover{ background:#efefef; }
+  .cat-num{ width:28px; color:var(--muted); font-size:14px; }
+  .cat-title{ flex:1; font-weight:700; font-size:15.5px; }
+  .cat-date{ color:var(--muted); font-size:14px; width:110px; text-align:right; }
+
+  .empty-msg{ padding:30px; color:var(--muted); text-align:center; font-size:15px; }
+
+  .post-view h1{ font-weight:900; font-size:28px; margin-bottom:4px; }
+  .post-meta{ color:var(--muted); font-size:13.5px; margin-bottom:20px; }
+  .post-body{ font-size:15.5px; line-height:1.65; }
+  .post-body img{ max-width:100%; border:1px solid #ddd; margin:10px 0; }
+  .back-link{ display:inline-block; margin-bottom:18px; color:var(--red); cursor:pointer; font-weight:700; font-size:14px; }
+  .back-link:hover{ text-decoration:underline; }
+
+  @media (max-width:600px){
+    .page{ padding:24px 18px 40px; }
+    .site-title{ font-size:32px; }
+    .today-date{ font-size:24px; }
+    .nav-links{ gap:12px; }
+    .nav-links span{ font-size:14px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top-row">
+    <div class="site-title" id="siteTitle">Welcome!</div>
+    <div class="today-date" id="todayDate"></div>
+  </div>
+  <nav>
+    <div class="nav-links" id="navLinks"></div>
+    <div class="nav-btns">
+      <a class="circle-btn minus" href="editor.html" title="Edit posts (opens the local editor tool)">&#8722;</a>
+      <a class="circle-btn plus" href="editor.html" title="New post (opens the local editor tool)">&#43;</a>
+    </div>
+  </nav>
+  <div id="content"><div class="empty-msg">Loading…</div></div>
+</div>
+
+<script>
+const CATEGORIES = ["Home","Codeforces","AtCoder","洛谷","Math","Templates","Others","About me"];
+let index = [];     // [{id,title,category,createdAt,file}]
+let ratings = {};
+
+function renderDate(){
+  const d = new Date();
+  document.getElementById('todayDate').textContent =
+    String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+function formatDate(iso){
+  const d = new Date(iso);
+  return String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear();
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function typeset(sel){
+  if(window.MathJax && window.MathJax.typesetPromise){
+    const el = document.querySelector(sel);
+    if(el) window.MathJax.typesetPromise([el]).catch(()=>{});
+  }
+}
+
+async function loadIndex(){
+  try{
+    const res = await fetch('posts/index.json', {cache:'no-store'});
+    index = res.ok ? await res.json() : [];
+  }catch(e){ index = []; }
+  try{
+    const res2 = await fetch('posts/ratings.json', {cache:'no-store'});
+    ratings = res2.ok ? await res2.json() : {};
+  }catch(e){ ratings = {}; }
+}
+
+function currentRoute(){
+  const h = location.hash.replace(/^#\/?/, '');
+  if(!h || h === '') return {view:'home'};
+  if(h === 'about') return {view:'about'};
+  if(h.startsWith('cat/')) return {view:'cat', cat: decodeURIComponent(h.slice(4))};
+  if(h.startsWith('post/')) return {view:'post', id: decodeURIComponent(h.slice(5))};
+  return {view:'home'};
+}
+
+function renderNav(activeCat){
+  const nav = document.getElementById('navLinks');
+  nav.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const span = document.createElement('span');
+    span.textContent = cat;
+    if(cat === activeCat) span.classList.add('active');
+    span.onclick = ()=>{
+      location.hash = cat === 'Home' ? '#/' : (cat === 'About me' ? '#/about' : '#/cat/' + encodeURIComponent(cat));
+    };
+    nav.appendChild(span);
+  });
+}
+
+function renderHome(){
+  renderNav('Home');
+  const sorted = [...index].sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+  const recent = sorted.slice(0,4);
+  const rows = recent.map((p,i)=>`
+    <tr><td>${i+1}</td>
+      <td class="title-cell" data-id="${p.id}">${escapeHtml(p.title)}</td>
+      <td>${formatDate(p.createdAt)}</td></tr>`).join('')
+    || `<tr><td colspan="3" class="empty-msg">No posts yet.</td></tr>`;
+
+  const r = ratings;
+  const rr = (key, cls) => r[key] ? `<tr><td>${key}</td><td class="${cls}">${r[key].val}</td>
+    <td class="${r[key].delta>=0?'delta-pos':'delta-neg'}">${r[key].delta>=0?'+':''}${r[key].delta}</td></tr>` : '';
+
+  document.getElementById('content').innerHTML = `
+    <div class="home-grid">
+      <div class="panel" style="flex:1.4 1 420px;">
+        <div class="panel-header">Recently uploaded blogs</div>
+        <table class="recent-table"><tbody>${rows}</tbody></table>
+      </div>
+      <div class="panel" style="flex:1 1 280px;">
+        <div class="panel-header">Ratings</div>
+        <table class="ratings-table"><tbody>
+          ${rr('CF','rating-cf')}${rr('AtC','rating-atc')}${rr('LC','rating-lc')}${rr('CC','rating-cc')}
+        </tbody></table>
+      </div>
+    </div>`;
+  document.querySelectorAll('.title-cell').forEach(td=>{
+    td.onclick = ()=> location.hash = '#/post/' + encodeURIComponent(td.dataset.id);
+  });
+}
+
+function renderCategory(cat){
+  renderNav(cat);
+  const list = index.filter(p=>p.category===cat).sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+  const content = document.getElementById('content');
+  if(list.length === 0){
+    content.innerHTML = `<div class="cat-list"><div class="empty-msg">No posts in ${escapeHtml(cat)} yet.</div></div>`;
+    return;
+  }
+  content.innerHTML = `<div class="cat-list">${list.map((p,i)=>`
+    <div class="cat-row" data-id="${p.id}">
+      <div class="cat-num">${i+1}</div>
+      <div class="cat-title">${escapeHtml(p.title)}</div>
+      <div class="cat-date">${formatDate(p.createdAt)}</div>
+    </div>`).join('')}</div>`;
+  content.querySelectorAll('.cat-row').forEach(row=>{
+    row.onclick = ()=> location.hash = '#/post/' + encodeURIComponent(row.dataset.id);
+  });
+}
+
+function renderAbout(){
+  renderNav('About me');
+  document.getElementById('content').innerHTML = `
+    <div class="cat-list"><div class="cat-row" style="cursor:default;">
+      <div class="cat-title">A little bit about the author of this blog — competitive programmer, problem-setter,
+      and enthusiast of Codeforces, AtCoder, and Luogu. Edit posts/about.json (or this section in index.html) to personalize.</div>
+    </div></div>`;
+}
+
+async function renderPost(id){
+  const meta = index.find(p=>p.id===id);
+  const content = document.getElementById('content');
+  if(!meta){ content.innerHTML = `<div class="empty-msg">Post not found.</div>`; return; }
+  renderNav(meta.category);
+  let html = '';
+  try{
+    const res = await fetch('posts/' + meta.file, {cache:'no-store'});
+    if(res.ok){ const data = await res.json(); html = data.content || ''; }
+  }catch(e){ html = '<p><em>Could not load post content.</em></p>'; }
+  content.innerHTML = `
+    <div class="post-view">
+      <div class="back-link" id="backLink">&larr; Back to ${escapeHtml(meta.category)}</div>
+      <h1>${escapeHtml(meta.title)}</h1>
+      <div class="post-meta">${escapeHtml(meta.category)} &middot; ${formatDate(meta.createdAt)}</div>
+      <div class="post-body" id="postBody">${html}</div>
+    </div>`;
+  document.getElementById('backLink').onclick = ()=>{
+    location.hash = '#/cat/' + encodeURIComponent(meta.category);
+  };
+  typeset('#postBody');
+}
+
+function route(){
+  const r = currentRoute();
+  if(r.view === 'home') renderHome();
+  else if(r.view === 'about') renderAbout();
+  else if(r.view === 'cat') renderCategory(r.cat);
+  else if(r.view === 'post') renderPost(r.id);
+}
+
+document.getElementById('siteTitle').onclick = ()=>{ location.hash = '#/'; };
+window.addEventListener('hashchange', route);
+
+(async function init(){
+  renderDate();
+  await loadIndex();
+  route();
+})();
+</script>
+</body>
+</html>
