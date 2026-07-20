@@ -151,6 +151,9 @@
         <div class="toolbar">
           <button type="button" id="btnBold"><b>B</b></button>
           <button type="button" id="btnItalic"><i>I</i></button>
+          <button type="button" id="btnUl">&#8226; List</button>
+          <button type="button" id="btnOl">1. List</button>
+          <button type="button" id="btnHr">Horizontal Rule</button>
           <button type="button" id="btnImage">Insert Image</button>
           <button type="button" id="btnMath">Insert Math $</button>
           <button type="button" id="btnPreview" style="margin-left:auto;">Toggle MathJax Preview</button>
@@ -329,6 +332,9 @@ function deletePost(id){
 
 document.getElementById('btnBold').onclick = ()=> document.execCommand('bold');
 document.getElementById('btnItalic').onclick = ()=> document.execCommand('italic');
+document.getElementById('btnUl').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('insertUnorderedList'); };
+document.getElementById('btnOl').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('insertOrderedList'); };
+document.getElementById('btnHr').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('insertHorizontalRule'); };
 document.getElementById('btnImage').onclick = ()=> document.getElementById('imageFileInput').click();
 document.getElementById('imageFileInput').onchange = (e)=>{
   const file = e.target.files[0]; if(!file) return;
