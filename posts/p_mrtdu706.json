@@ -1,0 +1,7 @@
+{
+  "id": "p_mrtdu706",
+  "title": "dsu1",
+  "category": "Templates",
+  "createdAt": "2026-07-20T15:31:36.054Z",
+  "content": "This is the template for the dsu class<div class=\"mac-code\"><div class=\"mac-code-header\" contenteditable=\"false\"><span class=\"dot red\"></span><span class=\"dot yellow\"></span><span class=\"dot green\"></span></div><pre><code>#include &lt;bits/stdc++.h&gt;\nusing namespace std;\nusing ll = long long;\n\nvoid solve() {\n  int N;\n  cin &gt;&gt; N;\n  vector&lt;int&gt; P(N);\n  for (int i = 1; i &lt; N; ++i) {\n    P[i] = i ^ P[i - 1];\n  }\n  ll res = 0;\n  for (int _ = 0; _ &lt; N; ++_) {\n    ll x;\n    cin &gt;&gt; x;\n    res ^= x;\n  }\n  for (int k = 1; k &lt;= N; ++k) {\n    res ^= ((((N / k) % 2) * (P[k - 1])) ^ P[N % k]);\n  }\n  cout &lt;&lt; res &lt;&lt; \"\\n\";\n}\n\nint main() {\n  ios::sync_with_stdio(false);\n  cin.tie(0);\n  solve();\n  return 0;\n}</code></pre></div><p><br></p>"
+}
