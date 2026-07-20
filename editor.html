@@ -37,6 +37,9 @@
   .toolbar button:hover{ background:#eaeaea; }
   .editor-area{ border:1px solid #999; min-height:200px; padding:12px; font-size:14.5px; line-height:1.6; outline:none; }
   .editor-area img{ max-width:100%; }
+  .editor-area code{ background:#f2f2f2; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:13.5px; }
+  .editor-area blockquote{ border-left:3px solid var(--red); margin:10px 0; padding:4px 14px; color:#444; }
+  .editor-area a{ color:var(--red); }
   .hint{ font-size:12px; color:var(--muted); margin-top:5px; }
   .math-preview{ border:1px dashed #bbb; padding:10px 12px; margin-top:8px; display:none; font-size:14.5px; }
   .math-preview.show{ display:block; }
@@ -149,11 +152,28 @@
       <div class="field">
         <label>Content</label>
         <div class="toolbar">
+          <select id="blockFormat" style="padding:6px 8px; border:1px solid #999; font-family:'Lato'; font-size:13px;">
+            <option value="P">Paragraph</option>
+            <option value="H1">Heading 1</option>
+            <option value="H2">Heading 2</option>
+            <option value="H3">Heading 3</option>
+            <option value="BLOCKQUOTE">Quote</option>
+          </select>
           <button type="button" id="btnBold"><b>B</b></button>
           <button type="button" id="btnItalic"><i>I</i></button>
+          <button type="button" id="btnUnderline"><u>U</u></button>
+          <button type="button" id="btnStrike"><s>S</s></button>
+          <button type="button" id="btnCode">&lt;/&gt;</button>
+          <button type="button" id="btnSub">X&#8322;</button>
+          <button type="button" id="btnSup">X&#8321;</button>
           <button type="button" id="btnUl">&#8226; List</button>
           <button type="button" id="btnOl">1. List</button>
           <button type="button" id="btnHr">Horizontal Rule</button>
+          <button type="button" id="btnLink">Link</button>
+          <button type="button" id="btnAlignLeft">&#8676;</button>
+          <button type="button" id="btnAlignCenter">&#8596;</button>
+          <button type="button" id="btnAlignRight">&#8677;</button>
+          <button type="button" id="btnClear">Clear Formatting</button>
           <button type="button" id="btnImage">Insert Image</button>
           <button type="button" id="btnMath">Insert Math $</button>
           <button type="button" id="btnPreview" style="margin-left:auto;">Toggle MathJax Preview</button>
@@ -330,11 +350,41 @@ function deletePost(id){
   renderPostsList();
 }
 
-document.getElementById('btnBold').onclick = ()=> document.execCommand('bold');
-document.getElementById('btnItalic').onclick = ()=> document.execCommand('italic');
+document.getElementById('btnBold').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('bold'); };
+document.getElementById('btnItalic').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('italic'); };
+document.getElementById('btnUnderline').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('underline'); };
+document.getElementById('btnStrike').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('strikeThrough'); };
+document.getElementById('btnSub').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('subscript'); };
+document.getElementById('btnSup').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('superscript'); };
 document.getElementById('btnUl').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('insertUnorderedList'); };
 document.getElementById('btnOl').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('insertOrderedList'); };
 document.getElementById('btnHr').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('insertHorizontalRule'); };
+document.getElementById('btnAlignLeft').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('justifyLeft'); };
+document.getElementById('btnAlignCenter').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('justifyCenter'); };
+document.getElementById('btnAlignRight').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('justifyRight'); };
+document.getElementById('btnClear').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('removeFormat'); };
+document.getElementById('btnLink').onclick = ()=>{
+  const url = prompt('Link URL:', 'https://');
+  if(!url) return;
+  document.getElementById('editorArea').focus();
+  document.execCommand('createLink', false, url);
+};
+document.getElementById('btnCode').onclick = ()=>{
+  const area = document.getElementById('editorArea');
+  area.focus();
+  const sel = window.getSelection();
+  const text = sel && sel.toString();
+  if(text){
+    document.execCommand('insertHTML', false, '<code>' + text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</code>');
+  } else {
+    document.execCommand('insertHTML', false, '<code>code</code>');
+  }
+};
+document.getElementById('blockFormat').addEventListener('change', (e)=>{
+  document.getElementById('editorArea').focus();
+  document.execCommand('formatBlock', false, e.target.value);
+  e.target.value = e.target.options[0].value === 'P' ? e.target.value : e.target.value; // keep selection visible
+});
 document.getElementById('btnImage').onclick = ()=> document.getElementById('imageFileInput').click();
 document.getElementById('imageFileInput').onchange = (e)=>{
   const file = e.target.files[0]; if(!file) return;
