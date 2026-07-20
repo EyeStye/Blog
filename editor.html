@@ -405,10 +405,6 @@ document.getElementById('blockFormat').addEventListener('change', (e)=>{
   document.getElementById('editorArea').focus();
   document.execCommand('formatBlock', false, e.target.value);
 });
-  document.getElementById('editorArea').focus();
-  document.execCommand('formatBlock', false, e.target.value);
-  e.target.value = e.target.options[0].value === 'P' ? e.target.value : e.target.value; // keep selection visible
-});
 document.getElementById('btnImage').onclick = ()=> document.getElementById('imageFileInput').click();
 document.getElementById('imageFileInput').onchange = (e)=>{
   const file = e.target.files[0]; if(!file) return;
