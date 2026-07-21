@@ -1,45 +1,10 @@
 [
   {
-    "id": "p_seed1",
-    "title": "Codeforces Round 1111 (Div. 2) discussions",
-    "category": "Codeforces",
-    "createdAt": "2026-07-20T09:00:00.000Z",
-    "file": "p_seed1.json"
-  },
-  {
-    "id": "p_seed2",
-    "title": "Codeforces Round 1109 (Div. 3) discussions",
-    "category": "Codeforces",
-    "createdAt": "2026-07-19T09:00:00.000Z",
-    "file": "p_seed2.json"
-  },
-  {
-    "id": "p_seed3",
-    "title": "ABC 467 discussion",
-    "category": "AtCoder",
-    "createdAt": "2026-07-18T09:00:00.000Z",
-    "file": "p_seed3.json"
-  },
-  {
-    "id": "p_seed4",
-    "title": "CF 476C – Dreamoon and Sums",
-    "category": "Codeforces",
-    "createdAt": "2026-07-17T09:00:00.000Z",
-    "file": "p_seed4.json"
-  },
-  {
     "id": "p_seed5",
     "title": "CF 1305C – Kuroni and Impossible Calculation",
     "category": "Codeforces",
     "createdAt": "2026-07-16T09:00:00.000Z",
     "file": "p_seed5.json"
-  },
-  {
-    "id": "p_seed7",
-    "title": "Codeforces Round 1107 (Div. 3) discussions",
-    "category": "Codeforces",
-    "createdAt": "2026-06-30T09:00:00.000Z",
-    "file": "p_seed7.json"
   },
   {
     "id": "p_seed8",
@@ -61,5 +26,12 @@
     "category": "Templates",
     "createdAt": "2026-07-20T15:31:36.054Z",
     "file": "p_mrtdu706.json"
+  },
+  {
+    "id": "p_mru8tjmx",
+    "title": "CF 1527C - Sequence Pair Weight",
+    "category": "Codeforces",
+    "createdAt": "2026-07-21T05:58:53.865Z",
+    "file": "p_mru8tjmx.json"
   }
 ]
