@@ -1,1 +1,7 @@
-{"id":"p_seed8","title":"Codeforces Round 1090 (Div. 4) discussions","category":"Codeforces","createdAt":"2026-04-04T09:00:00.000Z","content":"<p>Discussion thread for Codeforces Round 1090 (Div. 4).</p>"}
+{
+  "id": "p_seed8",
+  "title": "Codeforces Round 1090 (Div. 4) discussions",
+  "category": "Codeforces",
+  "createdAt": "2026-04-04T09:00:00.000Z",
+  "content": "This was the best <a href=\"https://codeforces.com/contest/2218\">contest</a> I have given so far! In this blog I will share how the contest went for me task by task, sharing my approach to problems which may/may not be optimal.<h3>A. The 67th Integer Problem</h3><div>The task was to choose $y$ such that $\\min(x,y)$ is maximised, where $x$ was known. The constraint for $y$ was $-67\\le y\\le 67$, so I chose the maximum value of $y=67$ for every $x$. Another easy way was to just output $x$, as $\\min(x,y)\\le x$ for any choice of $y$.&nbsp; The problem was solved in $\\mathcal O(1)$ time.</div><h3>B. The 67th 6-7 Integer Problem</h3><div>Seven integers $a_1,a_2,\\dots,a_7$ were given. We have to choose any six out of the seven and multiply them by $-1$. Over all possible such ways, we had to output the maximum possible sum of the seven integers. This is equivalent to just negating all the seven integers, and adding any one of the seven twice. Let $S=-(a_1+a_2+\\dots+a_7)$. Then we have to find the value of $$\\max_{1\\le i\\le 7}(S+2a_i)=S+2\\max_{1\\le i\\le 7}a_i$$ This can be done in a single pass of array of constant size so the task was solved in $\\mathcal O(1)$ time.</div><h3>C. The 67th Permutation Problem&nbsp;</h3><div><br></div>"
+}
