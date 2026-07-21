@@ -1,1 +1,0 @@
-{"id":"p_seed4","title":"CF 476C \u2013 Dreamoon and Sums","category":"Codeforces","createdAt":"2026-07-17T09:00:00.000Z","content":"<p>Editorial notes for CF 476C. The key idea uses the identity $\\lfloor a/b \\rfloor$ combined with divisor counting.</p><p>$$\\sum_{d \\mid b} f(d)$$</p>"}
