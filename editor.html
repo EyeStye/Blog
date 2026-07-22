@@ -14,6 +14,8 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" async></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
   :root{ --border:#333; --text:#111; --muted:#666; --red:#cc1414; --header-bg:#e2e2e2; --row-alt:#f2f2f2; --btn-gray:#bdbdbd; --green:#0a8a0a; }
   *{box-sizing:border-box;}
@@ -48,6 +50,8 @@
   .mac-code-header .dot.green{ background:#27c93f; }
   .mac-code pre{ margin:0; padding:14px 16px; overflow-x:auto; }
   .mac-code pre code{ background:none; padding:0; color:#e6e6e6; font-family:'SF Mono',Consolas,Monaco,monospace; font-size:13.5px; line-height:1.55; white-space:pre; }
+  .mac-code pre code.hljs{ background:none !important; padding:0 !important; }
+  .mac-code-lang{ margin-left:auto; color:#888; font-size:11.5px; padding:9px 12px 0 0; font-family:'Lato'; }
   .hint{ font-size:12px; color:var(--muted); margin-top:5px; }
   .math-preview{ border:1px dashed #bbb; padding:10px 12px; margin-top:8px; display:none; font-size:14.5px; }
   .math-preview.show{ display:block; }
@@ -359,6 +363,11 @@ function deletePost(id){
   renderPostsList();
 }
 
+document.getElementById('editorArea').addEventListener('paste', function(e){
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, text);
+});
 document.getElementById('btnBold').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('bold'); };
 document.getElementById('btnItalic').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('italic'); };
 document.getElementById('btnUnderline').onclick = ()=>{ document.getElementById('editorArea').focus(); document.execCommand('underline'); };
@@ -395,12 +404,14 @@ document.getElementById('btnCodeBlock').onclick = ()=>{
   const sel = window.getSelection();
   const rawText = (sel && sel.toString()) || '// your code here';
   const escaped = rawText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const lang = (prompt('Language (e.g. cpp, python, java, javascript):', 'cpp') || 'plaintext').trim().toLowerCase();
   const html = '<div class="mac-code">'
-    + '<div class="mac-code-header" contenteditable="false"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>'
-    + '<pre><code>' + escaped + '</code></pre>'
+    + '<div class="mac-code-header" contenteditable="false"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="mac-code-lang">' + escapeAttr(lang) + '</span></div>'
+    + '<pre><code class="language-' + escapeAttr(lang) + '">' + escaped + '</code></pre>'
     + '</div><p><br></p>';
   document.execCommand('insertHTML', false, html);
 };
+function escapeAttr(s){ return String(s).replace(/[^a-z0-9+#.]/gi, ''); }
 document.getElementById('blockFormat').addEventListener('change', (e)=>{
   document.getElementById('editorArea').focus();
   document.execCommand('formatBlock', false, e.target.value);
@@ -419,6 +430,9 @@ document.getElementById('btnPreview').onclick = ()=>{
   preview.classList.toggle('show');
   if(preview.classList.contains('show')){
     preview.innerHTML = document.getElementById('editorArea').innerHTML;
+    preview.querySelectorAll('pre code').forEach(block=>{
+      if(window.hljs) hljs.highlightElement(block);
+    });
     if(window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([preview]).catch(()=>{});
   }
 };
