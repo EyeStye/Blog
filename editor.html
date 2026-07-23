@@ -162,6 +162,7 @@
       <div class="row2">
         <div class="field"><label>Title</label><input type="text" id="postTitle" placeholder="Post title"></div>
         <div class="field"><label>Category</label><select id="postCategory"></select></div>
+        <div class="field" style="flex:0 0 170px;"><label>Date</label><input type="date" id="postDate"></div>
       </div>
       <div class="field">
         <label>Content</label>
@@ -342,6 +343,16 @@ function renderPostsList(){
   el.querySelectorAll('[data-del]').forEach(btn=> btn.onclick = ()=> deletePost(btn.dataset.del));
 }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function isoToDateInputValue(iso){
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function dateInputValueToIso(val){
+  return new Date(val + 'T12:00:00').toISOString();
+}
 
 function editPost(id){
   const meta = index.find(p=>p.id===id);
@@ -351,6 +362,7 @@ function editPost(id){
   document.getElementById('composeHeader').textContent = '3. Editing: ' + meta.title;
   document.getElementById('postTitle').value = meta.title;
   document.getElementById('postCategory').value = meta.category;
+  document.getElementById('postDate').value = isoToDateInputValue(meta.createdAt);
   document.getElementById('editorArea').innerHTML = postContents[id];
   window.scrollTo({top: document.getElementById('composeHeader').offsetTop - 20, behavior:'smooth'});
 }
@@ -467,22 +479,24 @@ document.getElementById('clearBtn').onclick = ()=>{
   editingId = null;
   document.getElementById('composeHeader').textContent = '3. New / edit post';
   document.getElementById('postTitle').value = '';
+  document.getElementById('postDate').value = isoToDateInputValue(new Date().toISOString());
   document.getElementById('editorArea').innerHTML = '';
   document.getElementById('mathPreview').classList.remove('show');
 };
 document.getElementById('saveBtn').onclick = ()=>{
   const title = document.getElementById('postTitle').value.trim();
   const category = document.getElementById('postCategory').value;
+  const dateVal = document.getElementById('postDate').value;
   const html = document.getElementById('editorArea').innerHTML;
   if(!title){ alert('Please enter a title.'); return; }
+  const createdAt = dateVal ? dateInputValueToIso(dateVal) : new Date().toISOString();
   if(editingId){
     const meta = index.find(p=>p.id===editingId);
-    meta.title = title; meta.category = category;
+    meta.title = title; meta.category = category; meta.createdAt = createdAt;
     postContents[editingId] = html;
     dirty[editingId] = 'mod';
   } else {
     const id = 'p_' + Date.now().toString(36);
-    const createdAt = new Date().toISOString();
     index.push({id, title, category, createdAt, file: id + '.json'});
     postContents[id] = html;
     dirty[id] = 'new';
@@ -641,6 +655,7 @@ function maybeRemember(cfg){
   }
 })();
 
+document.getElementById('postDate').value = isoToDateInputValue(new Date().toISOString());
 renderPostsList();
 </script>
 </body>
