@@ -52,6 +52,8 @@
   .mac-code pre code{ background:none; padding:0; color:#e6e6e6; font-family:'SF Mono',Consolas,Monaco,monospace; font-size:13.5px; line-height:1.55; white-space:pre; }
   .mac-code pre code.hljs{ background:none !important; padding:0 !important; }
   .mac-code-lang{ margin-left:auto; color:#888; font-size:11.5px; padding:9px 12px 0 0; font-family:'Lato'; }
+  .mac-copy-btn{ background:#3a3a3a; color:#ddd; border:none; border-radius:4px; padding:4px 10px; font-size:11.5px; font-family:'Lato'; cursor:pointer; margin:5px 10px 5px 0; }
+  .mac-copy-btn:hover{ background:#4a4a4a; }
   .hint{ font-size:12px; color:var(--muted); margin-top:5px; }
   .math-preview{ border:1px dashed #bbb; padding:10px 12px; margin-top:8px; display:none; font-size:14.5px; }
   .math-preview.show{ display:block; }
@@ -425,14 +427,39 @@ document.getElementById('imageFileInput').onchange = (e)=>{
   e.target.value = '';
 };
 document.getElementById('btnMath').onclick = ()=>{ const area=document.getElementById('editorArea'); area.focus(); document.execCommand('insertText', false, '$ ... $'); };
+function enhanceCodeBlocks(root){
+  root.querySelectorAll('.mac-code').forEach(block=>{
+    const codeEl = block.querySelector('pre code');
+    if(codeEl && window.hljs && !codeEl.classList.contains('hljs')) hljs.highlightElement(codeEl);
+    const header = block.querySelector('.mac-code-header');
+    if(header && !header.querySelector('.mac-copy-btn')){
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'mac-copy-btn';
+      btn.textContent = 'Copy';
+      btn.setAttribute('contenteditable', 'false');
+      if(!header.querySelector('.mac-code-lang')) btn.style.marginLeft = 'auto';
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const text = codeEl ? codeEl.textContent : '';
+        navigator.clipboard.writeText(text).then(()=>{
+          btn.textContent = 'Copied!';
+          setTimeout(()=>{ btn.textContent = 'Copy'; }, 1500);
+        }).catch(()=>{
+          btn.textContent = 'Failed';
+          setTimeout(()=>{ btn.textContent = 'Copy'; }, 1500);
+        });
+      });
+      header.appendChild(btn);
+    }
+  });
+}
 document.getElementById('btnPreview').onclick = ()=>{
   const preview = document.getElementById('mathPreview');
   preview.classList.toggle('show');
   if(preview.classList.contains('show')){
     preview.innerHTML = document.getElementById('editorArea').innerHTML;
-    preview.querySelectorAll('pre code').forEach(block=>{
-      if(window.hljs) hljs.highlightElement(block);
-    });
+    enhanceCodeBlocks(preview);
     if(window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([preview]).catch(()=>{});
   }
 };
