@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome!</title>
+<link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 <script>
@@ -26,7 +27,8 @@
   .lato-black{ font-weight:900; }
   .page{ width:100%; max-width:1080px; border:1px solid var(--border); background:#fff; padding:36px 40px 50px; min-height:700px; }
   .top-row{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
-  .site-title{ font-size:42px; font-weight:900; cursor:pointer; user-select:none; }
+  .site-title{ font-size:42px; font-weight:900; cursor:pointer; user-select:none; display:flex; align-items:center; gap:14px; }
+  .site-logo{ height:48px; width:auto; display:block; }
   .today-date{ font-size:34px; font-weight:900; padding-top:4px; }
   nav{ display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid var(--red); padding-bottom:10px; margin-bottom:26px; flex-wrap:wrap; gap:10px; }
   .nav-links{ display:flex; gap:22px; flex-wrap:wrap; }
@@ -116,6 +118,7 @@
   @media (max-width:600px){
     .page{ padding:24px 18px 40px; }
     .site-title{ font-size:32px; }
+    .site-logo{ height:36px; }
     .today-date{ font-size:24px; }
     .nav-links{ gap:12px; }
     .nav-links span{ font-size:14px; }
@@ -125,7 +128,7 @@
 <body>
 <div class="page">
   <div class="top-row">
-    <div class="site-title" id="siteTitle">Welcome!</div>
+    <div class="site-title" id="siteTitle"><img src="logo.png" alt="Logo" class="site-logo">Welcome!</div>
     <div class="today-date" id="todayDate"></div>
   </div>
   <nav>
