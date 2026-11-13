@@ -1,37 +1,9 @@
 [
   {
-    "id": "p_seed5",
-    "title": "CF 1305C – Kuroni and Impossible Calculation",
-    "category": "Codeforces",
-    "createdAt": "2026-07-16T09:00:00.000Z",
-    "file": "p_seed5.json"
-  },
-  {
-    "id": "p_seed8",
-    "title": "Codeforces Round 1090 (Div. 4) discussions",
-    "category": "Codeforces",
-    "createdAt": "2026-07-23T06:30:00.000Z",
-    "file": "p_seed8.json"
-  },
-  {
-    "id": "p_mrtcftp5",
-    "title": "Disjoint Set Union",
-    "category": "Templates",
-    "createdAt": "2026-07-20T14:52:26.009Z",
-    "file": "p_mrtcftp5.json"
-  },
-  {
-    "id": "p_mrtdu706",
-    "title": "dsu1",
-    "category": "Templates",
-    "createdAt": "2026-07-20T15:31:36.054Z",
-    "file": "p_mrtdu706.json"
-  },
-  {
-    "id": "p_mru8tjmx",
-    "title": "CF 1527C - Sequence Pair Weight",
-    "category": "Codeforces",
-    "createdAt": "2026-07-21T05:58:53.865Z",
-    "file": "p_mru8tjmx.json"
+    "id": "p_mwfge1om",
+    "title": "Segment Tree Problem",
+    "category": "AtCoder",
+    "createdAt": "2026-11-14T06:30:00.000Z",
+    "file": "p_mwfge1om.json"
   }
 ]
