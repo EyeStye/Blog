@@ -1,0 +1,7 @@
+{
+  "id": "p_mwfge1om",
+  "title": "Segment Tree Problem",
+  "category": "AtCoder",
+  "createdAt": "2026-11-14T06:30:00.000Z",
+  "content": "Given a sequence of positive integers $A=\\left\\{A_0,A_1,\\dots,A_{N-1}\\right\\}$ and $B=\\left\\{B_0,B_1,\\dots,B_{N-1}\\right\\}$, process $Q$ queries of the following form:<div><ol><li>Given an integer $i\\,\\,(0\\le i\\lt N$ and values of $x$ and $y$, set $A_i=x$ and $B_i=y$.</li><li>Given integers $L,R$ satisfying $0\\le L\\lt R\\le N$, output the value of $$\\dfrac{\\overset{R-1}{\\underset{i=L}{\\sum}} A_i B_i}{R - L}$$</li></ol></div>"
+}
