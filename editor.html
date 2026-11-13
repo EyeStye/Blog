@@ -236,7 +236,7 @@
    sha256sum on your new passphrase (or run in this page's console:
    crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourphrase')).then(b=>
    console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''))) */
-const PASSPHRASE_HASH = "63cd95c0c594291d1d4935eb4be50c8fa8bd148f294f73760123c81d93dca510"; // default passphrase: "changeme"
+const PASSPHRASE_HASH = "5661457b083f9ef59ace33a9892b874ab0ded9a5243ec08615feef41fb5be521"; // default passphrase: "changeme"
 
 async function sha256Hex(str){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
